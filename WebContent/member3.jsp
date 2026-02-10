@@ -10,35 +10,40 @@
 	//1. 요청한 데이터 request내장객체에 저장된 한글문자 인코딩 방식 UTF-8설정
 	request.setCharacterEncoding("utf-8");
 	
-	//2. 요청한 데이터들 request내장객체로부터 얻어 각 변수에 저장 
-	String id = request.getParameter("id");//입력한 아이디 
-	String pwd = request.getParameter("pwd");//입력한 비밀번호
-	String name = request.getParameter("name");//입력한 이름 
-	String email = request.getParameter("email");//입력한 이메일
-/*
-	<jsp:useBean>액션태그는 자바코드 객체 생성하는 구문을 대체해서 작성할수 있는 태그입니다
-	
-	id속성에는 생성한 객체의 참조변수명을 지정해서 객체를 식별할 유일한 고유ID값을 지정합니다
-	class속성에는 객체를 생성할때 사용하는 설계도인 클래스경로를 패키지명을 포함해서 지정합니다
-	scope속성에는 자바빈역할을 하는 VO또는 DTO객체를 생성후 저장될 내장객체 메모리영역 종류명 하나 지정
-	
-	문법
-		<jsp:useBean  id="생성한 객체를 식별할 고유ID값(참조변수명 설정)"    
-					  class="객체 생성시 사용될 클래스파일이 저장된 경로" 
-					  scope="생성한 객체는 어떤 내장객체 메모리영역에 저장할지 종류작성"
-							 page 또는 request 또는 session 또는 application
-		/>
-*/		
-
-	//3.1. MemberVO클래스의 객체하나를 생성해서 각 인스턴스변수에  요청한 데이터들 모두 각각 저장
-	//MemberVO  vo  = new MemberVO(id, pwd, name, email); 
 %>
-	<%-- jsp:useBean 액션태그를 사용해 MemberVO클래스의 기본생성자를 호출해 객체를 생성한 후  page내장객체 메모리 영역에 바인딩 --%>
-	<jsp:useBean id="vo" class="sec01.ex01.MemberVO"  scope="page"/>
-<%	 
-	//3.1.1. 바로위 jsp:useBean 액션태그를 사용해 생성한 MemberVO클래스의 객체메모리의 인스턴스변수에 요청한 데이터들을 각각 저장
-	vo.setId(id);  vo.setPwd(pwd); vo.setName(name);  vo.setEmail(email);
+	<%--
+		  jsp:setProperty 액션태그 
+		  
+		  - jsp:useBean 액션태그로 생성한 객체 내부에 만들어져 있는 setter메소드를 호출하는 액션 태그 
+		
+		  - 작성 방법   
+		  <jsp:setProperty name="useBean액션태그에 작성한 id속성의 값" property="변경할 값을 저장할 인스턴변수명" value="변경할 값"  />		
+	 --%>
 
+	<%-- 2.   jsp:useBean 액션태그를 사용해 MemberVO클래스의 기본생성자를 호출해 객체를 생성한 후  page내장객체 메모리 영역에 바인딩 
+		 2.1. 그리고 jsp:setProperty 액션태그를 사용해 MemberVO객체의 인스턴스변수에 요청한 데이터들을 각각 저장 합니다.
+	--%>
+	<jsp:useBean id="vo" class="sec01.ex01.MemberVO"  scope="page"/>
+
+    <%-- vo.setId("입력받은 아이디"); 
+    	 해석 : vo.setId(String id)메소드를 호출할때 매개변수 String id로  value속성에 작성한 값을 전달해서 
+    	      property속성에 작성한 id인스턴스변수에 저장 
+    --%>
+	<jsp:setProperty name="vo" property="id" value='<%=request.getParameter("id")%>'/>
+	<jsp:setProperty  name="vo" property="pwd" value='<%=request.getParameter("pwd")%>'/> <%-- vo.setPwd("입력받은 비밀번호"); --%>	
+	<jsp:setProperty  name="vo"  property="name" value='<%=request.getParameter("name")%>' /> <%-- vo.setName("입력받은 이름"); --%>
+	<jsp:setProperty  name="vo"  property="email" value='<%=request.getParameter("email")%>'/> 	<%-- vo.setEmail("입력받은 이메일"); --%>
+
+<!--
+	MemberVO클래스의 변수와 setter메소드들 그리고 setter메소드 호출구문 자바코드  
+	private String id;        public void setId(String id){ this.id = id; }                  vo.setId("admin");
+	private String pwd;		  public void setPwd(String pwd){ this.pwd = pwd; }              vo.setPwd("1234");
+	private String name;      public void setName(String name){ this.name = name; }          vo.setName("홍길동");
+	private String email;     public void setEmail(String email){ this.email = email; }      vo.setEmail("admin@naver.com");
+
+ --> 
+	
+<%	 
 	//3.2. 요청한 데이터들을  오라클 DBMS서버의 XE데이터베이스 내부에 만들어진 t_member테이블에 추가(insert) 하기 위해
 	//     MemberDAO객체의 addMember()메소드를 호출하여 실행 해야 하기 때문에
 	//     MemberDAO클래스의 객체 하나를 생성해서  addMember()메소드 호출시~~ 매개변수로 MemberVO객체주소 전달!

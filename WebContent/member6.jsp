@@ -8,37 +8,25 @@
     %>
 <%
 	//1. 요청한 데이터 request내장객체에 저장된 한글문자 인코딩 방식 UTF-8설정
-	request.setCharacterEncoding("utf-8");
-	
-	//2. 요청한 데이터들 request내장객체로부터 얻어 각 변수에 저장 
-	String id = request.getParameter("id");//입력한 아이디 
-	String pwd = request.getParameter("pwd");//입력한 비밀번호
-	String name = request.getParameter("name");//입력한 이름 
-	String email = request.getParameter("email");//입력한 이메일
-/*
-	<jsp:useBean>액션태그는 자바코드 객체 생성하는 구문을 대체해서 작성할수 있는 태그입니다
-	
-	id속성에는 생성한 객체의 참조변수명을 지정해서 객체를 식별할 유일한 고유ID값을 지정합니다
-	class속성에는 객체를 생성할때 사용하는 설계도인 클래스경로를 패키지명을 포함해서 지정합니다
-	scope속성에는 자바빈역할을 하는 VO또는 DTO객체를 생성후 저장될 내장객체 메모리영역 종류명 하나 지정
-	
-	문법
-		<jsp:useBean  id="생성한 객체를 식별할 고유ID값(참조변수명 설정)"    
-					  class="객체 생성시 사용될 클래스파일이 저장된 경로" 
-					  scope="생성한 객체는 어떤 내장객체 메모리영역에 저장할지 종류작성"
-							 page 또는 request 또는 session 또는 application
-		/>
-*/		
-
-	//3.1. MemberVO클래스의 객체하나를 생성해서 각 인스턴스변수에  요청한 데이터들 모두 각각 저장
-	//MemberVO  vo  = new MemberVO(id, pwd, name, email); 
+	request.setCharacterEncoding("utf-8");	
 %>
-	<%-- jsp:useBean 액션태그를 사용해 MemberVO클래스의 기본생성자를 호출해 객체를 생성한 후  page내장객체 메모리 영역에 바인딩 --%>
-	<jsp:useBean id="vo" class="sec01.ex01.MemberVO"  scope="page"/>
-<%	 
-	//3.1.1. 바로위 jsp:useBean 액션태그를 사용해 생성한 MemberVO클래스의 객체메모리의 인스턴스변수에 요청한 데이터들을 각각 저장
-	vo.setId(id);  vo.setPwd(pwd); vo.setName(name);  vo.setEmail(email);
 
+<%--
+	  2. 요청한 값들을 얻기 (회원가입을 위해 입력한 값들을 request객체 얻기)
+	  3. MemberVO객체를 생성해서 각 인스턴스변수에 요청한 값들을 저장	  
+ --%>
+	<jsp:useBean id="vo" class="sec01.ex01.MemberVO"  scope="page"/>
+	
+	<jsp:setProperty name="vo" property="*"    />
+	 <%--
+	     해석 : MemberVO객체의 모든 setter메소드 호출해서 
+	                모든 인스턴스변수에 각각 요청한 값들을 저장 시킨다.
+	                
+	     조건 : MemberVO클래스의 변수명과  
+	        MemberForm.html에 작성한 <input>의 name속성값이 같아야함
+	  --%>
+	
+<%	 
 	//3.2. 요청한 데이터들을  오라클 DBMS서버의 XE데이터베이스 내부에 만들어진 t_member테이블에 추가(insert) 하기 위해
 	//     MemberDAO객체의 addMember()메소드를 호출하여 실행 해야 하기 때문에
 	//     MemberDAO클래스의 객체 하나를 생성해서  addMember()메소드 호출시~~ 매개변수로 MemberVO객체주소 전달!
